@@ -32,7 +32,7 @@ def main():
 
     opt = optim.SGD(net.parameters(), lr=LEARNING_RATE, weight_decay=WEIGHT_DECAY, momentum=.9, nesterov=True)
 
-    if os.path.exists('checkpoint'):
+    if not os.path.exists('checkpoint'):
         os.mkdir('checkpoint')
 
     for epoch in range(1, EPOCHS + 1):
