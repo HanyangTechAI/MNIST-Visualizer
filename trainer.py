@@ -15,7 +15,7 @@ USE_CUDA = torch.cuda.is_available()
 
 EPOCHS = 40
 BATCH_SIZE = 128
-LEARNING_RATE = 1e-3
+LEARNING_RATE = 1e-2
 WEIGHT_DECAY = 1e-4
 
 def main():
@@ -30,8 +30,7 @@ def main():
     if USE_CUDA:
         net = net.cuda()
 
-    # opt = optim.SGD(net.parameters(), lr=LEARNING_RATE, weight_decay=WEIGHT_DECAY, momentum=.9, nesterov=True)
-    opt = optim.Adam(net.parameters(), lr=LEARNING_RATE, weight_decay=WEIGHT_DECAY, amsgrad=True)
+    opt = optim.SGD(net.parameters(), lr=LEARNING_RATE, weight_decay=WEIGHT_DECAY, momentum=.9, nesterov=True)
 
     if not os.path.exists('checkpoint'):
         os.mkdir('checkpoint')

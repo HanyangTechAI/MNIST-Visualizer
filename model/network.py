@@ -55,3 +55,10 @@ class Network(nn.Module):
         x = self.res_blocks(x)
 
         return self.classifier(x)
+
+    def predict_with_feature(self, x: torch.Tensor) -> torch.Tensor:
+        with torch.no_grad():
+            x = self.conv_block(x)
+            x = self.res_blocks(x)
+
+            return self.classifier(x), self.classifier[2](self.classifier[1](self.classifier[0](x)))
