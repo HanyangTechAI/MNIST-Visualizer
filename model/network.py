@@ -43,12 +43,11 @@ class Network(nn.Module):
         )
         self.res_blocks = nn.Sequential(*[ResBlock(filters) for _ in range(blocks)])
         self.classifier = nn.Sequential(
-            nn.Conv2d(filters, 128, 1, padding=0, bias=False),
-            nn.BatchNorm2d(128),
+            nn.Conv2d(filters, 1, 1, padding=0, bias=False),
+            nn.BatchNorm2d(1),
             nn.ReLU(inplace=True),
-            nn.AdaptiveAvgPool2d(1),
             nn.Flatten(),
-            nn.Linear(128, num_classes)
+            nn.Linear(28 ** 2, num_classes)
         )
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
