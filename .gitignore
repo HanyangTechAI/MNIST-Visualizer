@@ -1,6 +1,9 @@
 # VS Code cache file
 .vscode
 
+# Model file
+checkpoint
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
