@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 import torch
 import torch.nn.functional as F
-from torchvision.transforms import ToTensor
+from torchvision.transforms import ToTensor, ToPILImage
 
 from model.network import Network
 
@@ -18,6 +18,9 @@ def parse_args():
 
 	return parser.parse_args()
 
+def to_img(tensor: torch.Tensor):
+	return ToPILImage()(tensor.cpu().view(1, 28, 28))
+
 if __name__ == '__main__':
 	args = parse_args()
 
@@ -29,11 +32,28 @@ if __name__ == '__main__':
 
 	image = image.view(1, *image.shape)
 	
-	pred = F.softmax(net(image), dim=1)
+	pred, feat = net.predict_with_feature(image)
+	pred = F.softmax(pred, dim=1)
 
-	print('[Result]')
-	print('Argmax:', pred.argmax(dim=1)[0].item())
+	grid = plt.GridSpec(3, 2, wspace=0.2, hspace=0.2)
 
-	print('-----------------------')
-	for i in range(10):
-		print('{} : {:.4f}%'.format(i, pred[0][i].item() * 100))
+	orig_img_plot = plt.subplot(grid[0, 0])
+	orig_img_plot.set_title('input image')
+	orig_img_plot.xaxis.set_major_locator(plt.NullLocator())
+	orig_img_plot.yaxis.set_major_locator(plt.NullLocator())
+	orig_img_plot.imshow(to_img(image), cmap='gray')
+
+	feat_map_plot = plt.subplot(grid[0, 1])
+	feat_map_plot.set_title('feature map')
+	feat_map_plot.xaxis.set_major_locator(plt.NullLocator())
+	feat_map_plot.yaxis.set_major_locator(plt.NullLocator())
+	feat_map_plot.imshow(to_img(feat), cmap='gray')
+
+	last_plot = plt.subplot(grid[1:, 0:])
+	last_plot.set_xlabel('Prob')
+	last_plot.set_ylabel('Number')
+	last_plot.set_xlim((0, 100))
+	last_plot.set_yticks(np.arange(10))
+	last_plot.barh(np.arange(10), (100. * pred).cpu().numpy()[0])
+
+	plt.show()
