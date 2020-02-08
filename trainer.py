@@ -15,7 +15,7 @@ USE_CUDA = torch.cuda.is_available()
 
 EPOCHS = 40
 BATCH_SIZE = 128
-LEARNING_RATE = 1e-1
+LEARNING_RATE = 1e-2
 WEIGHT_DECAY = 1e-4
 
 def main():
@@ -25,7 +25,7 @@ def main():
     train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True, num_workers=2)
     test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE, shuffle=False, num_workers=2)
 
-    net = Network(1, 128, 10, 10)
+    net = Network(1, 64, 5, 10)
 
     if USE_CUDA:
         net = net.cuda()
