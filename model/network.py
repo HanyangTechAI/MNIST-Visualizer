@@ -36,29 +36,29 @@ class Network(nn.Module):
     def __init__(self, in_channel: int, filters:int, blocks:int, num_classes: int):
         super(Network, self).__init__()
 
-        self.conv_block = nn.Sequential(
+        self.feature_extractor = nn.Sequential(
             nn.Conv2d(in_channel, filters, 3, padding=1, bias=False),
             nn.BatchNorm2d(filters),
-            nn.ReLU(inplace=True)
-        )
-        self.res_blocks = nn.Sequential(*[ResBlock(filters) for _ in range(blocks)])
-        self.classifier = nn.Sequential(
+            nn.ReLU(inplace=True),
+
+            *[ResBlock(filters) for _ in range(blocks)],
+            
             nn.Conv2d(filters, 1, 1, padding=0, bias=False),
             nn.BatchNorm2d(1),
             nn.ReLU(inplace=True),
+        )
+        self.classifier = nn.Sequential(
             nn.Flatten(),
             nn.Linear(28 ** 2, num_classes)
         )
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        x = self.conv_block(x)
-        x = self.res_blocks(x)
+        x = self.feature_extractor(x)
 
         return self.classifier(x)
 
     def predict_with_feature(self, x: torch.Tensor) -> torch.Tensor:
         with torch.no_grad():
-            x = self.conv_block(x)
-            x = self.res_blocks(x)
+            x = self.feature_extractor(x)
 
-            return self.classifier(x), self.classifier[2](self.classifier[1](self.classifier[0](x)))
+            return self.classifier(x), x
